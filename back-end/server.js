@@ -11,14 +11,11 @@ mongoose.connect('mongodb://localhost:27017/blogs');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 
-
+server.use(express.json());
+server.use(express.urlencoded({ extended: false }));
 server.use(cors());
 
-
-server.use(bodyParser.urlencoded({ extended: true }));
-server.use(bodyParser.json());
-
-server.post('/register', express.json(), async (req, res) => {
+server.post('/register', async (req, res) => {
     console.log(req.body);
     const { username, password } = req.body;
 
