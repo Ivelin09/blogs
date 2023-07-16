@@ -1,0 +1,22 @@
+body {
+    text-align: center;
+    justify-content: center;
+}
+
+input {
+    width: 50%;
+    text-align: center;
+}
+
+.title {
+    font-size: 100px;
+}
+.card {
+    padding: 10%;
+  width: 50%;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
