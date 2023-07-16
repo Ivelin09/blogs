@@ -1,46 +1,34 @@
 const express = require('express');
-const cookieParser = require('cookie-parser')
 const server = express();
+const cors = require('cors');
 
-const { createProxyMiddleware } = require("http-proxy-middleware")
-const Cookies = require('cookies');
+const { createProxyMiddleware, responseInterceptor } = require("http-proxy-middleware")
 
-const cors = require('cors')
-
-server.use(cors({ origin: '*', credentials: true }));
-server.use(cookieParser())
-
-const apiProxy = createProxyMiddleware({
-    target: "http://localhost:8000",
-    pathRewrite: { [`^/api`]: "" },
-    secure: true,
-    onProxyReq: async (proxyReq, req) => {
-        const cookies = new Cookies(req);
-        const accessToken = cookies.get("authorization");
-
-        if (accessToken) {
-            proxyReq.setHeader("Authorization", `Bearer ${accessToken}`);
-        }
-    },
-});
+//server.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
 const apiAuthenticate = createProxyMiddleware({
     target: "http://localhost:8000",
+    changeOrigin: true,
     pathRewrite: { [`^/api`]: "" },
     secure: true,
-    onProxyRes: async (proxyRes, req, res) => {
-        const cookies = new Cookies(req, res);
-        cookies.set("authorization", "11111111111111111111111", {
-            secure: true
-        });
+    selfHandleResponse: true,
+    onProxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
+        console.log(req.method);
+        console.log(proxyRes.headers['content-type'])
+        if (proxyRes.headers['content-type'] === 'application/json; charset=utf-8') {
+            let stringifiedJSON = String.fromCharCode.apply(null, responseBuffer.toJSON('utf8').data);
+            data = JSON.parse(stringifiedJSON);
 
-        proxyRes.pipe(res)
-    }
+            res.cookie('authorization', data.token, {
+                secure: true,
+                httpOnly: true
+            });
+        }
+        return responseBuffer;
+    }),
 });
 
-server.use("/api/register", apiAuthenticate);
-server.use("/api", apiProxy);
-
+server.use(apiAuthenticate);
 
 server.listen(5000, () => {
     console.log('proxy is on');
-})
+});

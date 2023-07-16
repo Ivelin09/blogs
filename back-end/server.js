@@ -5,21 +5,23 @@ const mongoose = require('mongoose');
 const { User } = require('./schemas/blogs')
 
 const jwt = require("jsonwebtoken");
+const Cookies = require('cookies');
 
 mongoose.connect('mongodb://localhost:27017/blogs');
 
 const cors = require('cors');
 const bodyParser = require('body-parser');
 
+const cookieParser = require('cookie-parser')
+
+server.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
+server.use(cookieParser());
+
 server.use(express.json());
 server.use(express.urlencoded({ extended: false }));
-server.use(cors());
 
 server.post('/register', async (req, res) => {
-    console.log(req.body);
     const { username, password } = req.body;
-
-    console.log("username", username);
 
     const token = await jwt.sign({ username: username }, 'secret', { expiresIn: 1000 * 60 * 30 * 1000000000000000 });
     const doc = new User();
@@ -35,14 +37,13 @@ server.post('/register', async (req, res) => {
         });
         return;
     }
-    console.log(doc);
+
     res.json({
         status: 200,
         message: "success",
         token: token
     });
-});
 
-server.listen(8000, () => {
-    console.log('Server is on')
-})
+    server.listen(8000, () => {
+        console.log('Server is on')
+    })
