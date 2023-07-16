@@ -4,7 +4,21 @@ const cors = require('cors');
 
 const { createProxyMiddleware, responseInterceptor } = require("http-proxy-middleware")
 
-//server.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
+
+const apiProxy = createProxyMiddleware({
+    target: "http://localhost:8000",
+    pathRewrite: { [`^/api`]: "" },
+    secure: true,
+    onProxyReq: async (proxyReq, req) => {
+        const cookies = new Cookies(req);
+        const accessToken = cookies.get("authorization");
+
+        if (accessToken) {
+            proxyReq.setHeader("Authorization", `Bearer ${accessToken}`);
+        }
+    },
+});
+
 const apiAuthenticate = createProxyMiddleware({
     target: "http://localhost:8000",
     changeOrigin: true,
@@ -12,8 +26,6 @@ const apiAuthenticate = createProxyMiddleware({
     secure: true,
     selfHandleResponse: true,
     onProxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
-        console.log(req.method);
-        console.log(proxyRes.headers['content-type'])
         if (proxyRes.headers['content-type'] === 'application/json; charset=utf-8') {
             let stringifiedJSON = String.fromCharCode.apply(null, responseBuffer.toJSON('utf8').data);
             data = JSON.parse(stringifiedJSON);
@@ -27,7 +39,8 @@ const apiAuthenticate = createProxyMiddleware({
     }),
 });
 
-server.use(apiAuthenticate);
+server.use(['/api/register', '/api/login'], apiAuthenticate);
+server.use('/api', apiProxy)
 
 server.listen(5000, () => {
     console.log('proxy is on');
