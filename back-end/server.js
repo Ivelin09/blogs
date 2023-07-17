@@ -2,23 +2,26 @@ const express = require('express');
 const server = express();
 
 const mongoose = require('mongoose');
-const { User } = require('./schemas/blogs')
-
 const jwt = require("jsonwebtoken");
-const Cookies = require('cookies');
+const authorize = require('./auth');
+
+const User = require('./schemas/users')
+const Blogs = require('./schemas/blogs')
+
+const cors = require('cors');
+const upload = require('./uploadFile');
+
+const path = require('path');
+
+server.use(cors({ credentials: true, origin: 'http://localhost:3000' }))
 
 mongoose.connect('mongodb://localhost:27017/blogs');
 
-const cors = require('cors');
-const bodyParser = require('body-parser');
-
-const cookieParser = require('cookie-parser')
-
-server.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
-server.use(cookieParser());
-
 server.use(express.json());
 server.use(express.urlencoded({ extended: false }));
+
+server.use('/images', express.static(path.join(__dirname, 'images')));
+
 
 server.post('/register', async (req, res) => {
     const { username, password } = req.body;
@@ -60,6 +63,50 @@ server.post('/login', async (req, res) => {
             status: 200
         });
     console.log(query);
+});
+
+server.post('/createBlog', authorize, upload.single('image'), async (req, res) => {
+    const { title, description } = req.body;
+    const blog = new Blogs();
+
+    blog.title = title;
+    blog.description = description;
+    blog.author = req.sender;
+
+    console.log(req.file);
+    if (req.file)
+        blog.imagePath = req.file.path;
+
+    await blog.save();
+    res.sendStatus(200);
+});
+
+server.get('/blogs', async (req, res) => {
+    let data =
+        await Blogs.find({}).then(async (blogs) => {
+            let data = [];
+            await Promise.all(blogs.map(async (blog) => {
+                const object = {
+                    title: blog.title,
+                    id: blog._id,
+                    author: (await User.findOne({ _id: blog.author })).username
+                };
+
+                console.log(blog);
+                if (blog.imagePath)
+                    object.imagePath = blog.imagePath;
+
+                data.push(object);
+            }));
+            return data;
+        })
+
+    console.log('res', data);
+    res.json({
+        status: 200,
+        message: data
+    });
+
 });
 
 server.listen(8000, () => {
