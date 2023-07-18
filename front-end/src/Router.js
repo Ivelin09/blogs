@@ -3,6 +3,7 @@ import CreateBlog from './pages/createBlog'
 import Register from './pages/register'
 import Login from './pages/login';
 import Blogs from './pages/blogs'
+import Blog from './pages/blog'
 
 function Router() {
   return (
@@ -13,6 +14,7 @@ function Router() {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/blogs" element={<Blogs />} />
+          <Route path="/blog" element={<Blog />} />
         </Routes>
       </BrowserRouter>
     </div>
