@@ -13,13 +13,12 @@ export default function Home() {
         console.log('data', data);
         const response = await fetch("http://localhost:5000/api/register", {
             method: 'POST',
-            credentials: 'include',
-            mode: 'no-cors',
-            body: JSON.stringify(data),
             headers: {
                 "Content-Type": "application/json"
-            }
-        }).then((res) => res.json());
+            },
+            credentials: 'include',
+            body: JSON.stringify(data)
+        });
 
         console.log('token', response.token)
 

@@ -13,6 +13,7 @@ export default function LoginPage() {
             username: event.target.username.value,
             password: event.target.password.value
         };
+        console.log(process.env);
 
         const response = await fetch(`${process.env.REACT_APP_PROXY_SERVER}/login`, {
             headers: {
