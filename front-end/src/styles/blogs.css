@@ -1,0 +1,43 @@
+body  {
+    position: relative;
+    justify-content: center;
+    justify-items: center;
+    justify-self: center;
+    align-items: center;
+    text-align: center;
+    display: flex;
+}
+
+.flex {
+    display: flex;
+    align-items: center;
+    border: 2px solid black;
+    border-radius: 20px;
+}
+
+.flex {
+    transition: 0.2s;
+    margin: 20px;
+    min-width: 400px;
+}
+.flex img {
+    order: 0;
+    max-width: 200px;
+    max-height: 200px;
+    border-top-left-radius: 18px;
+    border-bottom-left-radius: 18px;
+}
+
+.flex:hover {
+    transform: scale(1.1);
+    margin: calc(1.2 * 1.2);
+}
+
+.flex h1 {
+    text-align: center;
+    justify-content: center;
+    justify-self: center;
+    order: 1;
+    width:100%;
+
+}

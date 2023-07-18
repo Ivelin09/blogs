@@ -1,10 +1,10 @@
 body {
     text-align: center;
     justify-content: center;
+    display: flex;
 }
 
 input {
-    width: 50%;
     text-align: center;
 }
 
@@ -12,11 +12,7 @@ input {
     font-size: 100px;
 }
 .card {
+    margin-top: 20%;
     padding: 10%;
-  width: 50%;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  -webkit-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
+    width: 100%;
 }
