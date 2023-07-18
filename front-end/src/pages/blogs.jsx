@@ -29,7 +29,7 @@ export default function Page() {
                 console.log(el);
                 return (
                     <>
-                        <div className="flex" onClick={() => navigate(`/blog/${el.id}`)} >
+                        <div className="flex" onClick={() => navigate(`/blog?id=${el.id}`)} >
                             <h1>{el.title}</h1>
                             <img src={`http://localhost:8000/${el.imagePath}`} />
                         </div >
