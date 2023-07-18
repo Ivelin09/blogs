@@ -7,6 +7,7 @@ const authorize = require('./auth');
 
 const User = require('./schemas/users')
 const Blogs = require('./schemas/blogs')
+const Comments = require('./schemas/comments');
 
 const cors = require('cors');
 const upload = require('./uploadFile');
@@ -72,10 +73,7 @@ server.post('/createBlog', authorize, upload.single('image'), async (req, res) =
     blog.title = title;
     blog.description = description;
     blog.author = req.sender;
-
-    console.log(req.file);
-    if (req.file)
-        blog.imagePath = req.file.path;
+    blog.imagePath = req.file ? req.file.path : 'images/none.png'
 
     await blog.save();
     res.sendStatus(200);
@@ -89,7 +87,8 @@ server.get('/blogs', async (req, res) => {
                 const object = {
                     title: blog.title,
                     id: blog._id,
-                    author: (await User.findOne({ _id: blog.author })).username
+                    author: (await User.findOne({ _id: blog.author })).username,
+                    imagePath: blog.imagePath
                 };
 
                 console.log(blog);
@@ -107,6 +106,81 @@ server.get('/blogs', async (req, res) => {
         message: data
     });
 
+});
+
+server.post('/comment', authorize, async (req, res) => {
+    const { id, description } = req.body;
+
+    const comment = new Comments();
+
+    comment.description = description;
+
+    comment.parent = id;
+
+    comment.author = req.sender.username
+
+    await comment.save();
+
+    res.send({
+        status: 200
+    });
+});
+
+server.get('/replies/:commentId', async (req, res) => {
+    const query = await Comments.find({ parent: req.params.commentId });
+
+    console.log("reply", query);
+
+    res.send({
+        status: 200,
+        message: query
+    });
+
+});
+
+server.get('/comments/:blogId', async (req, res) => {
+    console.log(req.params.blogId);
+    const query = await Blogs.aggregate([
+        {
+            '$match': {
+                '$expr': {
+                    '$eq': [
+                        "$_id", {
+                            '$toObjectId': req.params.blogId
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            '$lookup': {
+                'from': "comments",
+                'localField': "_id",
+                'foreignField': "parent",
+                'as': "comments"
+            }
+        }]).exec().then((res) => res[0]);
+
+    console.log("HEREEE", JSON.stringify(query, null, 2));
+
+    console.log(query);
+
+    res.json({
+        status: 200,
+        message: query
+    })
+
+});
+
+
+server.get('/blog/:id', async (req, res) => {
+    const blogId = req.params.id;
+    const blog = await Blogs.findOne({ _id: blogId });
+
+    res.json({
+        status: 200,
+        message: blog
+    })
 });
 
 server.listen(8000, () => {
