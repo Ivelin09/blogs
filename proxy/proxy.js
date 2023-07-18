@@ -1,6 +1,10 @@
 const express = require('express');
 const server = express();
+
+const Cookies = require('cookies');
 const cors = require('cors');
+
+server.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
 
 const { createProxyMiddleware, responseInterceptor } = require("http-proxy-middleware")
 
@@ -8,11 +12,11 @@ const { createProxyMiddleware, responseInterceptor } = require("http-proxy-middl
 const apiProxy = createProxyMiddleware({
     target: "http://localhost:8000",
     pathRewrite: { [`^/api`]: "" },
-    secure: true,
+    secure: false,
     onProxyReq: async (proxyReq, req) => {
+        console.log(req.headers.cookie);
         const cookies = new Cookies(req);
         const accessToken = cookies.get("authorization");
-
         if (accessToken) {
             proxyReq.setHeader("Authorization", `Bearer ${accessToken}`);
         }
