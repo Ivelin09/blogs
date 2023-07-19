@@ -18,15 +18,17 @@ const Comment = ({ comment }) => {
     const [showReplyField, setReplyField] = useState(false);
 
     const handleSubmit = async () => {
-        await replies(comment, comment._id);
-        setReplies(true);
+        if (!showReplies)
+            await replies(comment, comment._id);
+
+        setReplies((prev) => !prev);
     }
 
     return (
-        <div style={{ paddingLeft: 10 }} className="author">
+        <div style={{ paddingLeft: 10 }} className="comment">
             <h1>{comment.author}</h1>
-            <p>{comment.description}</p>
-            <p onClick={handleSubmit} style={{ display: 'inline' }} >View replies</p>
+            <p className='description'>{comment.description}</p>
+            <div onClick={handleSubmit} style={{ display: 'inline' }} >{showReplies ? <p>Hide Replies</p> : <p>View Replies</p>}</div>
             <p onClick={() => { setReplyField(true) }} style={{ display: 'inline', paddingLeft: '1%' }}> Reply </p>
             {showReplyField && <ReplyField parentId={comment._id} />}
             {showReplies && comment.subComment &&
@@ -92,7 +94,7 @@ export default function Page() {
                         <h1>Comments</h1>
                         <hr />
                         <textarea className="textarea textarea-bordered" placeholder="Bio" ref={commentRef} />
-                        <button className="btn" onClick={handleSubmit}>Send</button>
+                        <button className="btn blogSubmit" onClick={handleSubmit}>Send</button>
                         {comments.map((el, idx) => {
                             return <Comment comment={el} />
                         })}

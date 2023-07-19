@@ -1,6 +1,6 @@
 .card {
     margin-top: 0;
-    height: 100vh;
+    height: 100%;
     width: 60vw;
     justify-content: none;
 }
@@ -9,8 +9,33 @@
     text-align: left;
 }
 
-.btn {
+.blogSubmit {
     position: relative;
     margin-left: 2%;
     transform: translate(0, -50%);
+}
+
+.comment {
+    border-left: 2px solid gray;
+}
+
+.comment h1 {
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.comment > ::after {
+    border-bottom-left-radius: 20px;
+}
+
+.comment p {
+    display: inline;
+}
+
+.comment .description {
+    display: block;
+}
+
+.card {
+    padding-top: 5%;
 }
