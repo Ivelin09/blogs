@@ -43,6 +43,18 @@ const apiAuthenticate = createProxyMiddleware({
     }),
 });
 
+server.use('/socket.io',
+    createProxyMiddleware({
+        target: 'http://localhost:8000',
+        ws: true,
+        onProxyReqWs: (proxyReq, req, socket) => {
+            socket.on('error', (err) => {
+                console.error(`WebSocket error: ${err}`);
+            });
+        },
+    })
+);
+
 server.use(['/api/register', '/api/login'], apiAuthenticate);
 server.use('/api', apiProxy)
 
