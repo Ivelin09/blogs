@@ -1,12 +1,12 @@
 const jwt = require("jsonwebtoken");
-const User = require('./schemas/users');
+const User = require('../schemas/users');
 const Cookies = require('cookies');
 
 module.exports = async function (req, res, next) {
     const cookies = new Cookies(req);
     const authorization = cookies.get("authorization");
 
-    console.log(authorization)
+    console.log(req)
 
     if (!authorization) {
         res.json({
