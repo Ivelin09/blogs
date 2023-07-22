@@ -1,16 +1,17 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom'
+import { socket } from '../socket';
+
 import '../styles/blog.css'
 
 import ReplyField from '../components/ReplyField';
 
 const replies = async (comment, id) => {
-    const response = await fetch(`${process.env.REACT_APP_PROXY_SERVER}/replies/${id}`, {
+    const response = await fetch(`${process.env.REACT_APP_PROXY_SERVER}/api/reply/${id}`, {
         method: 'GET'
     }).then((res) => res.json());
 
     comment.subComment = response.message;
-    console.log(response);
 }
 
 const Comment = ({ comment }) => {
@@ -44,6 +45,8 @@ const Comment = ({ comment }) => {
 export default function Page() {
     const [blog, setBlog] = useState(null);
     const [comments, setComments] = useState([]);
+    const [username, setUsername] = useState(null);
+    const [typers, setTyper] = useState([]);
 
     const commentRef = useRef();
     const blogId = new URLSearchParams(document.location.search).get("id");
@@ -51,7 +54,7 @@ export default function Page() {
     const { search } = useLocation().search;
     useEffect(() => {
         const fetchBlog = async () => {
-            const response = await fetch(`${process.env.REACT_APP_PROXY_SERVER}/blog/${blogId}`, {
+            const response = await fetch(`${process.env.REACT_APP_PROXY_SERVER}/api/blog/${blogId}`, {
                 method: 'GET'
             }).then((res) => res.json()).then((res) => res.message);
 
@@ -59,19 +62,51 @@ export default function Page() {
         };
 
         const fetchComments = async () => {
-            const response = await fetch(`${process.env.REACT_APP_PROXY_SERVER}/comments/${blogId}`, {
+            const response = await fetch(`${process.env.REACT_APP_PROXY_SERVER}/api/comments/${blogId}`, {
                 method: 'GET'
             }).then((res) => res.json()).then((res) => res.message);
 
             setComments(response.comments);
         };
 
+        const fetchNickname = async () => {
+            const response = await fetch(`${process.env.REACT_APP_PROXY_SERVER}/api/authorize`, {
+                method: 'GET',
+                credentials: 'include'
+            }).then((res) => res.json());
+
+            setUsername(response.username);//
+        };
+
+        socket.on('typer', (socket) => {
+            setTyper([...typers, socket.username]);
+        })
+
+        fetchNickname();
         fetchComments();
         fetchBlog();
+
+        return () => {
+            socket.off('typer');
+        }
     }, []);
 
+    const userIsTyping = async () => {
+        socket.emit('typer', {
+            blog: blogId,
+            username
+        });
+    };
+
+    const userQuitTyping = async () => {
+        socket.emit('typerQuit', {
+            blog: blogId,
+            username
+        });
+    }
+
     const handleSubmit = async () => {
-        const response = await fetch(`${process.env.REACT_APP_PROXY_SERVER}/comment`, {
+        const response = await fetch(`${process.env.REACT_APP_PROXY_SERVER}/api/comment`, {
             method: "POST",
             credentials: 'include',
             headers: {
@@ -93,8 +128,17 @@ export default function Page() {
                     <div className="comments">
                         <h1>Comments</h1>
                         <hr />
-                        <textarea className="textarea textarea-bordered" placeholder="Bio" ref={commentRef} />
-                        <button className="btn blogSubmit" onClick={handleSubmit}>Send</button>
+                        {typers.length != 0 && (
+                            typers.length > 1 &&
+                            <p>{[...typers] + " are typing"}</p>
+                            ||
+                            typers.length == 1 &&
+                            <p>{[...typers] + " is typing"}</p>
+                        )}
+                        {username && <><textarea className="textarea textarea-bordered" onChange={() => userIsTyping()} onBlur={() => userQuitTyping()} placeholder="Bio" ref={commentRef} />
+                            <button className="btn blogSubmit" onClick={handleSubmit}>Send</button>
+                        </>
+                        }
                         {comments.map((el, idx) => {
                             return <Comment comment={el} />
                         })}
