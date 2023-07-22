@@ -13,15 +13,20 @@ const commentRoute = require('./routes/comment.route');
 const loginRoute = require('./routes/login.route');
 const usersRoute = require('./routes/users.route');
 
-const { Server } = require("socket.io");
-const io = new Server(server);
+const io = require("socket.io")(server);
 
 io.on('connection', (socket) => {
-    socket.on('message', () => {
-        console.log('works!');
-    })
-    console.log('AAAA')
-})
+    socket.on('typer', (data) => {
+        io.to(data.blog).emit('typer', {
+            username: data.username
+        });
+        socket.join(data.blog);
+    });
+
+    socket.on('typerQuit', (data) => {
+        socket.leave(data.blog);
+    });
+});
 
 app.use(cors({ credentials: true, origin: 'http://localhost:3000' }))
 

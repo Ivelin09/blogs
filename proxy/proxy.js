@@ -14,7 +14,6 @@ const apiProxy = createProxyMiddleware({
     pathRewrite: { [`^/api`]: "" },
     secure: false,
     onProxyReq: async (proxyReq, req) => {
-        console.log(req.headers.cookie);
         const cookies = new Cookies(req);
         const accessToken = cookies.get("authorization");
         if (accessToken) {
@@ -46,14 +45,10 @@ const apiAuthenticate = createProxyMiddleware({
 server.use('/socket.io',
     createProxyMiddleware({
         target: 'http://localhost:8000',
-        ws: true,
-        onProxyReqWs: (proxyReq, req, socket) => {
-            socket.on('error', (err) => {
-                console.error(`WebSocket error: ${err}`);
-            });
-        },
+        ws: true
     })
 );
+
 
 server.use(['/api/register', '/api/login'], apiAuthenticate);
 server.use('/api', apiProxy)
