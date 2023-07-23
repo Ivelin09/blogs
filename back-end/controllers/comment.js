@@ -15,7 +15,8 @@ const post = async (req, res) => {
     await comment.save();
 
     res.send({
-        status: 200
+        status: 200,
+        comment
     });
 }
 const getAll = async (req, res) => {
