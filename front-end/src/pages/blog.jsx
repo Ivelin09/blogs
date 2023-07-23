@@ -80,7 +80,24 @@ export default function Page() {
 
         socket.on('typer', (socket) => {
             setTyper([...typers, socket.username]);
+        });
+
+        socket.on('typerQuit', (socket) => {
+            setTyper(() => {
+                const arr = [...typers];
+                return arr.filter((user) => user != socket.username)
+            });
         })
+
+        socket.on('comment', (socket) => {//
+            console.log('test?')
+            setComments((prev) => [...prev, socket])
+        })
+
+        socket.emit('blogConnect', {
+            blog: blogId
+        });
+
 
         fetchNickname();
         fetchComments();
@@ -88,6 +105,8 @@ export default function Page() {
 
         return () => {
             socket.off('typer');
+            socket.off('typerQuit');
+            socket.off('comment');
         }
     }, []);
 
@@ -116,7 +135,12 @@ export default function Page() {
                 id: blogId,
                 description: commentRef.current.value
             })
-        })
+        }).then((res) => res.json());
+
+        socket.emit("comment", {
+            blog: blogId,
+            ...response.comment
+        });
     }
     return (
         <>
@@ -140,7 +164,7 @@ export default function Page() {
                         </>
                         }
                         {comments.map((el, idx) => {
-                            return <Comment comment={el} />
+                            return <Comment comment={el} key={idx} />
                         })}
                     </div>
                 </div>
