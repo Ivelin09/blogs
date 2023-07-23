@@ -5,7 +5,7 @@ const ReplyField = ({ parentId }) => {
     const commentRef = useRef();
 
     const handleSubmit = async () => {
-        const response = await fetch(`${process.env.REACT_APP_PROXY_SERVER}/comment`, {
+        const response = await fetch(`${process.env.REACT_APP_PROXY_SERVER}/api/comment`, {
             method: "POST",
             credentials: 'include',
             headers: {

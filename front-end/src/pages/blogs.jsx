@@ -9,7 +9,7 @@ export default function Page() {
 
     useEffect(() => {
         const fetchBlogs = async () => {
-            const blogs = await fetch(`${process.env.REACT_APP_PROXY_SERVER}/blogs`, {
+            const blogs = await fetch(`${process.env.REACT_APP_PROXY_SERVER}/api/blogs`, {
                 method: 'GET'
             }).then((res) => res.json())
                 .then((res) => res.message);
@@ -26,7 +26,6 @@ export default function Page() {
     return (
         <>
             {blogs.map((el, idx) => {
-                console.log(el);
                 return (
                     <>
                         <div className="flex" onClick={() => navigate(`/blog?id=${el.id}`)} >

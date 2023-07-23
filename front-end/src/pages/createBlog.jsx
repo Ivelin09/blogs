@@ -9,9 +9,7 @@ const Page = ({ }) => {
         formData.append("title", event.target.title.value);
         formData.append("description", event.target.description.value);
 
-        const [title, description] = [event.target.title.value, event.target.description.value];
-
-        const response = await fetch(`${process.env.REACT_APP_PROXY_SERVER}/createBlog`, {
+        const response = await fetch(`${process.env.REACT_APP_PROXY_SERVER}/api/blog`, {
             method: "POST",
             credentials: 'include',
             body: formData
