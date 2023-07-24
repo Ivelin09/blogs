@@ -19,6 +19,16 @@ const post = async (req, res) => {
         comment
     });
 }
+
+const Delete = async (req, res) => {
+    console.log(req.params.id);
+    await Comments.deleteOne({ _id: req.params.id });
+
+    res.json({
+        status: 200
+    })
+}
+
 const getAll = async (req, res) => {
     const query = await Blogs.aggregate([
         {
@@ -61,5 +71,6 @@ const getOne = async (req, res) => {
 module.exports = {
     post,
     getAll,
-    getOne
+    getOne,
+    delete: Delete
 }
