@@ -1,10 +1,12 @@
 const cookie = require('cookie');
+const jwt = require('jsonwebtoken');
+const User = require('./schemas/users');
 
-const userData = new Map();
+const userData = {};
+let http, io;
 
 const socketListen = (server) => {
-    const http = require('http');
-    const io = require("socket.io")(server, {
+    http = require('http'), io = require("socket.io")(server, {
         cors: {
             origin: "http://localhost:3000",
             credentials: true
@@ -12,15 +14,101 @@ const socketListen = (server) => {
         }
     });
 
+    module.exports.http = http;
+    module.exports.io = io;
+
+    io.use(async (socket, next) => {
+        if (!socket.handshake.headers.cookie) {
+            next();
+            return;
+        }
+
+        const hashedAccessToken = socket.handshake.headers.cookie.split("=")[1];
+
+        const accessToken = jwt.verify(hashedAccessToken, 'secret');
+        const senderObj = await User.findOne({ username: accessToken.username });
+
+        socket.user = senderObj;
+        next();
+    });
+
     io.on('connection', (socket) => {
-        console.log('here')
         socket.on('blogConnect', (data) => {
+            if (userData[socket.id])
+                return;
             socket.join(data.blog);
         });
 
-        socket.on('connection', () => {
-            console.log('ehre?');
+        socket.on('connection', async () => {
+            socket.emit('connected');
             socket.join('page');
+
+
+            if (socket.user) {
+
+
+
+                userData[socket.id] = {
+                    id: socket.id,
+                    user: socket.user,
+                    timeout: setInterval(() => {
+                        console.log('offline');
+
+                        if (userData[socket.id].timeout)
+                            clearInterval(userData[socket.id].timeout)
+
+                        for (const key in userData)
+                            if (userData[key].user.username == socket.user.username && socket.id != userData[key].id) {
+                                delete userData[socket.id];
+                                return;
+                            }
+                        io.to('page').emit('leave', {
+                            user: socket.user.username
+                        })
+                        delete userData[socket.id];
+
+                        socket.disconnect();
+                    }, 5000)
+                }
+
+                console.log('online');
+                io.to('page').emit('online', {
+                    user: socket.user.username
+                });
+            }
+
+
+        })
+
+        socket.on('online', () => {
+            if (!socket.user)
+                return;
+
+            if (userData[socket.id]) {
+                console.log('re-onlined')
+                clearInterval(userData[socket.id].timeout)
+                userData[socket.id].timeout = setInterval(() => {
+
+                    console.log('offline');
+
+
+
+                    if (userData[socket.id].timeout)
+                        clearInterval(userData[socket.id].timeout)
+
+                    for (const key in userData)
+                        if (userData[key].user.username == socket.user.username && socket.id != userData[key].id) {
+                            delete userData[socket.id];
+                            return;
+                        }
+                    io.to('page').emit('leave', {
+                        user: socket.user.username
+                    })
+                    delete userData[socket.id];
+
+                    socket.disconnect();
+                }, 5000)
+            }
         })
 
         socket.on('comment', (data) => {
@@ -39,7 +127,10 @@ const socketListen = (server) => {
             })
         });
     });
-    return { io };
+
+    io.on('disconnect', () => {
+        console.log('try me!');
+    })
 };
 
-module.exports = socketListen;
+module.exports = { userData, socketListen, http, io };
