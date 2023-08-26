@@ -20,6 +20,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 
 app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use('/profile_images', express.static(path.join(__dirname, 'profile_images')));
 
 app.use(blogRoute, commentRoute, loginRoute, usersRoute);
 
