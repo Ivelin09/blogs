@@ -1,0 +1,59 @@
+.profileBoard {
+    margin-top: 10vh;
+    display: flex;
+    flex-direction: row;
+    text-align: center;
+    margin-left: 10%;
+    width: fit-content;
+    width: 100%;
+}
+
+.profileBoard div {
+    width: 200px;
+}
+
+.profileBoard img {
+    border-radius:100%;
+    position: absolute;
+    bottom: 8vh;
+}
+
+.profileBoard h1 {
+    position: relative;
+    bottom: 4vh;
+    right: 1.5vw;
+}
+
+.profile {
+    text-align: center;
+}
+
+.profile .group {
+    display: grid;
+    justify-content: center;
+    grid-column-gap: 25%;
+}
+
+.profile h1 {
+    grid-row-start: 1;
+    grid-row-end: 1;
+}
+
+.profile div  {
+    min-width: 200px;
+    min-height: 100px;
+    height: fit-content;
+}
+
+.profile dialog input {
+    display: none;
+}
+
+.profile .modal-action {
+    width: 100%;
+    justify-content: center;
+}
+
+.profile  h2 {
+    font-size: 30px;
+}
