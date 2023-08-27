@@ -7,7 +7,13 @@ const userSchema = new Schema({
         unique: true,
         required: true
     },
-    password: String
+    password: String,
+    imagePath: {
+        type: String,
+        unique: false,
+        required: false,
+        default: "profile_images/unkown.png"
+    }
 });
 
 
