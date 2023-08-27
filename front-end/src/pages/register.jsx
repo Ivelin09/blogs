@@ -22,7 +22,7 @@ export default function Home() {
 
     }
     return (
-        <div className="block">
+        <div className="register block">
             <form onSubmit={handleSubmit}>
                 <label htmlFor="first">Username</label>
                 <input name="username" type="text" placeholder="Type here" className="input input-bordered w-full max-w-xs" />

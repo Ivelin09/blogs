@@ -3,8 +3,9 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import CreateBlog from './pages/createBlog'
 import Register from './pages/register'
 import Login from './pages/login';
-import Blogs from './pages/blogs'
-import Blog from './pages/blog'
+import Blogs from './pages/blogs';
+import Blog from './pages/blog';
+import Profile from './pages/profile'
 
 import { socket } from './socket';
 
@@ -29,8 +30,10 @@ function Router() {
     establishConnection();
 
     return () => {
+      console.log('well maybe yeah')
       socket.off('connected');
       window.removeEventListener('beforeunload', () => {
+        console.log('here');
         socket.close();
       })
 
@@ -43,6 +46,7 @@ function Router() {
         <BrowserRouter>
           <Routes >
             <Route path="/createBlog" element={<CreateBlog />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/blogs" element={<Blogs />} />

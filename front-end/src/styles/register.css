@@ -1,3 +1,18 @@
+.register * {
+    text-align: center;
+    justify-content: center;
+}
+
+.register {
+    border: 2px solid black;
+    position: relative;
+    margin-top: 10%;
+}
+
+.register input {
+    max-width: 20%;
+}
+
 label {
     display: block;
 }

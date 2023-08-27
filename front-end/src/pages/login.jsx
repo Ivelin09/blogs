@@ -26,7 +26,7 @@ export default function LoginPage() {
             pushMessage(response);
     }
     return (
-        <>
+        <div className="login">
             {message ?? message}
             <h1 className="title">Login Page</h1>
             <div className="card glass block">
@@ -45,6 +45,6 @@ export default function LoginPage() {
                 </form>
 
             </div>
-        </>
+        </div>
     )
 }

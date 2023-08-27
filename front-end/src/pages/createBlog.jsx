@@ -19,7 +19,7 @@ const Page = ({ }) => {
 
     return (
         <div>
-            <h1 class="title">Create Blog</h1>
+            <h1 className="title">Create Blog</h1>
             <div className="card glass center box">
                 <form onSubmit={handleSubmit}>
                     <label>Title</label>

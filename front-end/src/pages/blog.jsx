@@ -53,7 +53,7 @@ const Comment = ({ comment, comments, setComments }) => {
         </div>
     )
 }
-//asd
+
 
 export default function Page() {
     const [blog, setBlog] = useState(null);
@@ -103,7 +103,6 @@ export default function Page() {
         })
 
         socket.on('comment', (socket) => {//
-            console.log('test?')
             setComments((prev) => [...prev, socket])
         })
 
@@ -156,7 +155,7 @@ export default function Page() {
         });
     }
     return (
-        <>
+        <div className="blog">
             {blog && (<>
                 <div className="card glass center">
                     <h1>{blog.title}</h1>
@@ -182,6 +181,6 @@ export default function Page() {
                     </div>
                 </div>
             </>)}
-        </>
+        </div>
     )
 }

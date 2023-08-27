@@ -1,8 +1,13 @@
+.blog body {
+        display: flex;
+    text-align: center;
+    justify-content: center;
+}
+
 .card {
     margin-top: 0;
     height: 100%;
     width: 60vw;
-    justify-content: none;
 }
 
 .comments {
@@ -15,7 +20,12 @@
     transform: translate(0, -50%);
 }
 
+textarea {
+    margin-top: 5px;
+}
+
 .comment {
+    margin-top: 10px;
     border-left: 2px solid gray;
 }
 
@@ -37,5 +47,12 @@
 }
 
 .card {
+    text-align: center;
     padding-top: 5%;
+}
+
+.card img {
+    max-width: 400px;
+    margin-left: 50%;
+    transform: translate(-50%);
 }
