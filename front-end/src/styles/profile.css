@@ -57,3 +57,11 @@
 .profile  h2 {
     font-size: 30px;
 }
+
+.posts h1 {
+    border-bottom: 2px solid #ededed;
+}
+
+.posts {
+    width: fit-content;
+}

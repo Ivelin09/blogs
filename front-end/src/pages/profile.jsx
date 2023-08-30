@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useLayoutEffect } from 'react';
 import '../styles/profile.css'
 
 export default () => {
     const [user, setUser] = useState({});
+
     useEffect(() => {
         const fetchData = async () => {
             const response = await fetch(`${process.env.REACT_APP_PROXY_SERVER}/api/profile`, {
@@ -17,8 +18,26 @@ export default () => {
             console.log('imagePath', response);
         }
 
+        const fetchPosts = async () => {
+            const response = await fetch(`${process.env.REACT_APP_PROXY_SERVER}/api/userPosts`, {
+                method: 'GET',
+                credentials: 'include'
+            }).then((res) => res.json());
+
+            setUser((prev) => {
+                return { ...prev, posts: response.message }
+            });
+        }
+
+        fetchPosts();
         fetchData();
     }, []);
+
+    useEffect(() => {
+        if (!document.querySelectorAll(".posts")[0].children[4])
+            return;
+        document.querySelectorAll(".posts")[0].children[4].style.borderBottom = 'none';
+    }, [user])
 
     const changeProfilePciture = async () => {
         const formData = new FormData();
@@ -65,7 +84,9 @@ export default () => {
                     </div>
                     <h1>posts</h1>
                     <div className="posts modifyGlass glass">
-
+                        {user.posts && user.posts.map((post, idx) => {
+                            return <h1>{post.title}</h1>
+                        })}
                     </div>
                 </div>
             </div>
