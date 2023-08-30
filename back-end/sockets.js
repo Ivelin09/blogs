@@ -1,6 +1,7 @@
 const cookie = require('cookie');
 const jwt = require('jsonwebtoken');
 const User = require('./schemas/users');
+const Blogs = require('./schemas/blogs');
 
 const userData = {};
 let http, io;
@@ -73,7 +74,7 @@ const socketListen = (server) => {
 
                 console.log('online');
                 io.to('page').emit('online', {
-                    user: socket.user.username
+                    user: socket.user
                 });
             }
 
@@ -90,9 +91,6 @@ const socketListen = (server) => {
                 userData[socket.id].timeout = setInterval(() => {
 
                     console.log('offline');
-
-
-
                     if (userData[socket.id].timeout)
                         clearInterval(userData[socket.id].timeout)
 
@@ -102,7 +100,7 @@ const socketListen = (server) => {
                             return;
                         }
                     io.to('page').emit('leave', {
-                        user: socket.user.username
+                        user: socket.user
                     })
                     delete userData[socket.id];
 
@@ -125,6 +123,21 @@ const socketListen = (server) => {
             io.to(data.blog).emit('typerQuit', {
                 username: data.username
             })
+        });
+
+        socket.on('searching', async (data) => {
+            console.log('asdasd')
+            let blogs = await Blogs.find({
+                title: {
+                    $regex: `^${data.search}`
+                }
+            });
+
+            console.log('blogs', blogs);
+
+            io.to(socket.id).emit("suggestions", {
+                message: blogs
+            });
         });
     });
 

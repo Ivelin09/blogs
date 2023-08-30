@@ -32,13 +32,9 @@ const Page = () => {
         }
 
         socket.on('online', (data) => {
-            console.log('here?')
-            if (users.includes(data.user) == true)
-                return;
             setUsers((prev) => {
-                if (prev.includes(data.user) == true)
+                if (prev.filter((user) => user.username === data.user.username).length > 0)
                     return prev;
-
                 return [...prev, data.user];
             });
 
@@ -46,7 +42,7 @@ const Page = () => {
         socket.on('leave', (data) => {
             setUsers((prev) => {//asd
                 const arr = [...prev];
-                return arr.filter((user) => user != data.user);
+                return arr.filter((user) => user.username != data.user.username);
             });
         })
 
