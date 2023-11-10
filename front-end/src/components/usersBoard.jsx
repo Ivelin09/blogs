@@ -66,7 +66,7 @@ const Page = () => {
                         </div>
 
                     </div>
-                    <img className="setting" onClick={() => navigate('/profile')} src="https://cdn.icon-icons.com/icons2/1880/PNG/512/iconfinder-settings-4341324_120534.png" />
+                    <img className="setting" onClick={() => navigate(`/profile?username=${user.username}`)} src="https://cdn.icon-icons.com/icons2/1880/PNG/512/iconfinder-settings-4341324_120534.png" />
                     <h2>{user.username}</h2>
                 </div>
             </div>
@@ -76,7 +76,7 @@ const Page = () => {
                 return (<div Nameclass="user glass">
                     <div className="avatar online">
                         <div className="w-24 rounded-full">
-                            <img src={`${process.env.REACT_APP_BACK_END_SERVER}/${user.imagePath}`} />
+                            <img src={`${process.env.REACT_APP_BACK_END_SERVER}/${user.imagePath}`} onClick={() => navigate(`/profile?username=${user.username}`)} />
                         </div>
 
                     </div><div><p>{user.username}</p></div></div>)

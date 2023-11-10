@@ -8,5 +8,6 @@ router.get('/blog/:id', blogController.getOne);
 router.get('/blogs', blogController.getAll);
 router.post('/blog', authorize, upload.single('image'), blogController.post);
 router.get("/userPosts", authorize, blogController.getAllFromUser);
+router.get("/userPosts/:username", blogController.getAllFromUser);
 
 module.exports = router;

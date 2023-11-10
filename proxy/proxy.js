@@ -16,6 +16,7 @@ const apiProxy = createProxyMiddleware({
     onProxyReq: async (proxyReq, req) => {
         const cookies = new Cookies(req);
         const accessToken = cookies.get("authorization");
+
         if (accessToken) {
             proxyReq.setHeader("Authorization", `Bearer ${accessToken}`);
         }
@@ -33,6 +34,7 @@ const apiAuthenticate = createProxyMiddleware({
             let stringifiedJSON = String.fromCharCode.apply(null, responseBuffer.toJSON('utf8').data);
             data = JSON.parse(stringifiedJSON);
 
+            console.log('data', stringifiedJSON);
             res.cookie('authorization', data.token, {
                 secure: true,
                 httpOnly: true
@@ -45,12 +47,12 @@ const apiAuthenticate = createProxyMiddleware({
 server.use('/socket.io',
     createProxyMiddleware({
         target: 'http://localhost:8000',
-        ws: true
+        ws: true,
+
     })
 );
 
-
-server.use(['/api/register', '/api/login'], apiAuthenticate);
+server.use(['/api/login', '/api/register'], apiAuthenticate);
 server.use('/api', apiProxy)
 
 server.listen(5000, () => {

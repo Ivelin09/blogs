@@ -1,0 +1,55 @@
+.input {
+    width: 40vw;
+}
+
+.navbar {
+    justify-content: center;
+    column-gap: 20px;
+    display: grid;
+    grid-template-areas: "search inbox post"
+                        "suggestion . .";
+    grid-template-columns: 20% min-content min-content;
+    justify-items: center;
+}
+.input {
+    max-width: fit-content;
+    grid-area: search;
+}
+
+.indicator {
+    grid-area: inbox;
+}
+.post {
+    grid-area: post;
+}
+
+.navbar input {
+    width: 100%;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+.suggestions {
+    text-align: center;
+    width: fit-content;
+    display: block;
+}
+
+.suggestions h1 {
+    border: 2px solid #ededed;
+    border-top: 0;
+    border-radius: 10px;
+}
+
+.suggestion {
+
+    transition: 2s;
+    grid-area: suggestion;
+}
+
+input {
+    max-width:20%;
+    overflow: hidden;
+    margin: 0;
+    justify-self: center;
+}

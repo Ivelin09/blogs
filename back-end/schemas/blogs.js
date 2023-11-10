@@ -16,7 +16,8 @@ const blogSchema = new Schema({
     },
     imagePath: {
         type: String,
-        required: false
+        required: false,
+        deafult: '/images/none_image.png'
     }
 })
 

@@ -1,14 +1,17 @@
 import { useState, useEffect, useLayoutEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+
 import '../styles/profile.css'
 
 export default () => {
     const [user, setUser] = useState({});
+    const search = useLocation().search;
 
     useEffect(() => {
         const fetchData = async () => {
-            const response = await fetch(`${process.env.REACT_APP_PROXY_SERVER}/api/profile`, {
-                method: 'GET',
-                credentials: 'include'
+            const username = new URLSearchParams(search).get('username');
+            const response = await fetch(`${process.env.REACT_APP_PROXY_SERVER}/api/profile/${username}`, {
+                method: 'GET'
             }).then((res) => res.json());
 
             setUser((prev) => {
@@ -19,9 +22,10 @@ export default () => {
         }
 
         const fetchPosts = async () => {
-            const response = await fetch(`${process.env.REACT_APP_PROXY_SERVER}/api/userPosts`, {
-                method: 'GET',
-                credentials: 'include'
+            const username = new URLSearchParams(search).get('username');
+            console.log('username', username);
+            const response = await fetch(`${process.env.REACT_APP_PROXY_SERVER}/api/userPosts/username=${username}`, {
+                method: 'GET'
             }).then((res) => res.json());
 
             setUser((prev) => {

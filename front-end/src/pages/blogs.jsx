@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import UsersBoard from '../components/usersBoard';
 import '../styles/blogs.css'
+import Header from '../components/Header'
 
 import { useNavigate } from 'react-router-dom';
 
@@ -23,6 +24,7 @@ export default function Page() {
     return (
         <>
             <div className='blogs'>
+                <Header />
                 <div>
                     {blogs.map((el, idx) => {
                         return (

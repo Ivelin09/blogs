@@ -50,7 +50,7 @@ const getAll = async (req, res) => {
                 'as': "comments"
             }
         }]).exec().then((res) => res[0]);
-
+    console.log(query);
     res.json({
         status: 200,
         message: query

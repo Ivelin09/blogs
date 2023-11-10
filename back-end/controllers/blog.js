@@ -1,16 +1,23 @@
 const User = require('../schemas/users')
 const Blogs = require('../schemas/blogs');
+const mongoose = require('mongoose')
+
+const test = async (req, res) => {
+    res.json({
+        status: 200,
+        message: []
+    });
+}
 
 const post = async (req, res) => {
     const { title, description } = req.body;
-    console.log(req);
     const blog = new Blogs();
 
     blog.title = title;
     blog.description = description;
     blog.author = req.sender;
     blog.imagePath = req.file ? req.file.path : 'images/none.png'
-
+    console.log('AAAAAAAAAAAAAAAAAAAAAAAAAa')
     await blog.save();
     res.sendStatus(200);
 }
@@ -27,7 +34,6 @@ const getAll = async (req, res) => {
                     imagePath: blog.imagePath
                 };
 
-                console.log(blog);
                 if (blog.imagePath)
                     object.imagePath = blog.imagePath;
 
@@ -36,10 +42,33 @@ const getAll = async (req, res) => {
             return data;
         })
 
-    console.log('res', data);
     res.json({
         status: 200,
         message: data
+    });
+}
+
+const getAllFromUser = async (req, res) => {
+    const user = User.find({ username: req.query.username }).exec();
+
+    let blogs = await Blogs.aggregate([
+        {
+            '$match': {
+                '$expr': {
+                    '$eq': [
+                        "$author", {
+                            '$toObjectId': user._id
+                        }
+                    ]
+                }
+            }
+        }])
+
+    console.log(JSON.stringify(blogs, null, 4))
+
+    res.json({
+        status: 200,
+        message: blogs
     });
 }
 
@@ -55,6 +84,8 @@ const getOne = async (req, res) => {
 
 module.exports = {
     post,
+    test,
     getOne,
-    getAll
+    getAll,
+    getAllFromUser,
 }

@@ -5,6 +5,16 @@ const express = require('express');
 
 const { io, userData, http } = require('../sockets.js');
 
+const test = (req, res) => {
+    const { username } = req.query;
+
+    const user = User.find({ username: username }).exec();
+
+    res.json({
+        imagePath: user.imagePath,
+        username: username
+    })
+}
 
 const post = async (req, res) => {
     const { username, password } = req.body;
@@ -45,11 +55,7 @@ const getAllOnlineUsers = async (req, res) => {
 }
 
 const profileData = async (req, res) => {
-    if (!req.sender) {
-        return;
-    }
 
-    console.log(req.sender);
     const { imagePath, username } = await User.findOne({ _id: req.sender._id }).exec();
 
     res.json({
@@ -57,6 +63,18 @@ const profileData = async (req, res) => {
         username: username
     });
 }
+
+const otherProfileData = async (req, res) => {
+    const { username } = req.params;
+
+    const { imagePath } = await User.findOne({ username: username }).exec();
+
+    res.json({
+        imagePath: `${imagePath}`,
+        username: username
+    });
+}
+
 
 const changeProfile = async (req, res) => {
     console.log('file', req.file);
@@ -88,8 +106,10 @@ const get = async (req, res) => {
 
 module.exports = {
     getAllOnlineUsers,
+    otherProfileData,
     changeProfile,
     profileData,
     post,
+    test,
     get
 }

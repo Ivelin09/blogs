@@ -3,12 +3,18 @@ const User = require('../schemas/users');
 const Cookies = require('cookies');
 
 module.exports = async function (req, res, next) {
+
     const cookies = new Cookies(req);
     const authorization = cookies.get("authorization");
 
-    console.log(req)
+    console.log('auth', authorization)
 
     if (!authorization) {
+        next('route');
+
+        if (res.setHeaders)
+            return;
+
         res.json({
             status: 401,
             message: "invalid token"
@@ -19,8 +25,8 @@ module.exports = async function (req, res, next) {
     const token = jwt.verify(authorization, 'secret');
 
     const senderObj = await User.findOne({ username: token.username });
+    console.log('token', senderObj)
 
-    console.log("asd", senderObj);
     if (!senderObj)
         res.json({
             status: 401,
